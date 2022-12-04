@@ -36,7 +36,6 @@ const executeCalculations = (input: string): number => {
   let output = 0;
 
   for(let i = 0; i < rows.length; i=i+3) {
-    console.log(`${i}, ${i+1}, ${i+2}`);
     for(let j = 0; j < rows[i].length; j++){
       if(rows[i+1].includes(rows[i][j]) && rows[i+2].includes(rows[i][j])){
         if (rows[i][j] === rows[i][j].toUpperCase()){
