@@ -16,7 +16,8 @@ export const App = () => {
   }
 
   React.useEffect(() => {
-    setOutput(executeCalculations(input))
+    //setOutput(executePartOne(input))
+    setOutput(executePartTwo(input))
   }, [input]);
 
   return (
@@ -28,8 +29,8 @@ export const App = () => {
   )
 }
 
-const executeCalculations = (input: string): string => {
-  if(!input){
+const executePartOne = (input: string): string => {
+  if (!input) {
     return '';
   }
   const rows = input.split('\r\n');
@@ -45,26 +46,97 @@ const executeCalculations = (input: string): string => {
   [F] [G] [H] [Z] [N] [P] [M] [N] [D]
   1   2   3   4   5   6   7   8   9 
   */
-  
+
   const arr = [
     ['_'], // 0
-    ['F','C','J','P','H','T','W'], // 1
-    ['G','R','V','F','Z','J','B','H'], // 2
-    ['H','P','T','R'], // 3
-    ['Z','S','N','P','H','T'], // 4
-    ['N','V','F','Z','H','J','C','D'], // 5
-    ['P','M','G','F','W','D','Z'], // 6
-    ['M','V','Z','W','S','J','D','P'], // 7
-    ['N','D','S'], // 8
-    ['D','Z','S','F','M'] // 9
+    ['F', 'C', 'J', 'P', 'H', 'T', 'W'], // 1
+    ['G', 'R', 'V', 'F', 'Z', 'J', 'B', 'H'], // 2
+    ['H', 'P', 'T', 'R'], // 3
+    ['Z', 'S', 'N', 'P', 'H', 'T'], // 4
+    ['N', 'V', 'F', 'Z', 'H', 'J', 'C', 'D'], // 5
+    ['P', 'M', 'G', 'F', 'W', 'D', 'Z'], // 6
+    ['M', 'V', 'Z', 'W', 'S', 'J', 'D', 'P'], // 7
+    ['N', 'D', 'S'], // 8
+    ['D', 'Z', 'S', 'F', 'M'] // 9
   ]
 
-  for(let i = 10; i < rows.length; i++){
+  for (let i = 10; i < rows.length; i++) {
     const instruction = rows[i].split(' ');
-    const qty = instruction[1];
-    const source = instruction[3];
-    const destination = instruction[5];
+    const qty = parseInt(instruction[1]);
+    const source = parseInt(instruction[3]);
+    const destination = parseInt(instruction[5]);
+
+    if (qty === 0) {
+      continue;
+    }
+
+    for (let j = 1; j <= qty; j++) {
+      arr[destination][arr[destination].length] = arr[source][arr[source].length - j];
+    }
+
+    arr[source].splice(arr[source].length - qty, qty);
+
   }
 
-  return output;  
+  for (let i = 1; i < arr.length; i++) {
+    output += arr[i][arr[i].length - 1];
+  }
+
+  return output;
+}
+
+const executePartTwo = (input: string): string => {
+  if (!input) {
+    return '';
+  }
+  const rows = input.split('\r\n');
+  let output = '';
+  /*
+      [H]         [D]     [P]        
+  [W] [B]         [C] [Z] [D]        
+  [T] [J]     [T] [J] [D] [J]        
+  [H] [Z]     [H] [H] [W] [S]     [M]
+  [P] [F] [R] [P] [Z] [F] [W]     [F]
+  [J] [V] [T] [N] [F] [G] [Z] [S] [S]
+  [C] [R] [P] [S] [V] [M] [V] [D] [Z]
+  [F] [G] [H] [Z] [N] [P] [M] [N] [D]
+  1   2   3   4   5   6   7   8   9 
+  */
+
+  const arr = [
+    ['_'], // 0
+    ['F', 'C', 'J', 'P', 'H', 'T', 'W'], // 1
+    ['G', 'R', 'V', 'F', 'Z', 'J', 'B', 'H'], // 2
+    ['H', 'P', 'T', 'R'], // 3
+    ['Z', 'S', 'N', 'P', 'H', 'T'], // 4
+    ['N', 'V', 'F', 'Z', 'H', 'J', 'C', 'D'], // 5
+    ['P', 'M', 'G', 'F', 'W', 'D', 'Z'], // 6
+    ['M', 'V', 'Z', 'W', 'S', 'J', 'D', 'P'], // 7
+    ['N', 'D', 'S'], // 8
+    ['D', 'Z', 'S', 'F', 'M'] // 9
+  ]
+
+  for (let i = 10; i < rows.length; i++) {
+    const instruction = rows[i].split(' ');
+    const qty = parseInt(instruction[1]);
+    const source = parseInt(instruction[3]);
+    const destination = parseInt(instruction[5]);
+
+    if (qty === 0) {
+      continue;
+    }
+
+    for (let j = 0; j < qty; j++) {
+      arr[destination][arr[destination].length] = arr[source][arr[source].length - qty + j];
+    }
+
+    arr[source].splice(arr[source].length - qty, qty);
+
+  }
+
+  for (let i = 1; i < arr.length; i++) {
+    output += arr[i][arr[i].length - 1];
+  }
+
+  return output;
 }
