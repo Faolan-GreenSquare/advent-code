@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react"
+import React from "react"
 
 export const App = () => {
   const [output, setOutput] = React.useState('');
@@ -48,7 +48,7 @@ const executeCalculations = (input: string): string => {
   
   const arr = [
     ['_'], // 0
-    ['F', 'C', 'J', 'P', 'H', 'T', 'W'], // 1
+    ['F','C','J','P','H','T','W'], // 1
     ['G','R','V','F','Z','J','B','H'], // 2
     ['H','P','T','R'], // 3
     ['Z','S','N','P','H','T'], // 4
@@ -60,10 +60,10 @@ const executeCalculations = (input: string): string => {
   ]
 
   for(let i = 10; i < rows.length; i++){
-    const instructions = rows[i].split(' ');
-    const qty = instructions[1];
-    const source = instructions[3];
-    const destination = instructions[5];
+    const instruction = rows[i].split(' ');
+    const qty = instruction[1];
+    const source = instruction[3];
+    const destination = instruction[5];
   }
 
   return output;  
