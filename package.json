@@ -36,6 +36,8 @@
     ]
   },
   "devDependencies": {
-    "raw-loader": "^4.0.2"
+    "@typescript-eslint/parser": "^5.45.0",
+    "raw-loader": "^4.0.2",
+    "typescript": "^4.9.3"
   }
 }
