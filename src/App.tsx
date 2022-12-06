@@ -16,7 +16,8 @@ export const App = () => {
   }
 
   React.useEffect(() => {
-    setOutput(executeCalculations(input))
+    setOutput(executePartOne(input));
+    //setOutput(executePartTwo(input));
   }, [input]);
 
   return (
@@ -28,25 +29,22 @@ export const App = () => {
   )
 }
 
-const executeCalculations = (input: string): number => {
+const executePartOne = (input: string): number => {
   if(!input){
     return 0;
   }
   const rows = input.split('\r\n');
   let output = 0;
 
-  for(let i = 0; i < rows.length; i=i+3) {
-    for(let j = 0; j < rows[i].length; j++){
-      if(rows[i+1].includes(rows[i][j]) && rows[i+2].includes(rows[i][j])){
-        if (rows[i][j] === rows[i][j].toUpperCase()){
-          output = output + (rows[i][j].charCodeAt(0) - 38);
-        } else {
-          output = output + (rows[i][j].charCodeAt(0) - 96);
-        }
-        break;
-      }
-    }
+  return output;  
+}
+
+const executePartTwo = (input: string): number => {
+  if(!input){
+    return 0;
   }
+  const rows = input.split('\r\n');
+  let output = 0;
 
   return output;  
 }
