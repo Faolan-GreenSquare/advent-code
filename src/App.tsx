@@ -1,7 +1,7 @@
 import React from "react"
 
 export const App = () => {
-  const [output, setOutput] = React.useState('');
+  const [output, setOutput] = React.useState(0);
   const [input, setInput] = React.useState('');
 
   const handleOnFileChange = (e) => {
@@ -16,7 +16,7 @@ export const App = () => {
   }
 
   React.useEffect(() => {
-    setOutput(executeCalculations(input))
+    setOutput(executepartOne(input))
   }, [input]);
 
   return (
@@ -28,43 +28,26 @@ export const App = () => {
   )
 }
 
-const executeCalculations = (input: string): string => {
-  if(!input){
-    return '';
+const executepartOne = (input: string): number => {
+  if (!input) {
+    return 0;
   }
-  const rows = input.split('\r\n');
-  let output = '';
-  /*
-      [H]         [D]     [P]        
-  [W] [B]         [C] [Z] [D]        
-  [T] [J]     [T] [J] [D] [J]        
-  [H] [Z]     [H] [H] [W] [S]     [M]
-  [P] [F] [R] [P] [Z] [F] [W]     [F]
-  [J] [V] [T] [N] [F] [G] [Z] [S] [S]
-  [C] [R] [P] [S] [V] [M] [V] [D] [Z]
-  [F] [G] [H] [Z] [N] [P] [M] [N] [D]
-  1   2   3   4   5   6   7   8   9 
-  */
-  
-  const arr = [
-    ['_'], // 0
-    ['F','C','J','P','H','T','W'], // 1
-    ['G','R','V','F','Z','J','B','H'], // 2
-    ['H','P','T','R'], // 3
-    ['Z','S','N','P','H','T'], // 4
-    ['N','V','F','Z','H','J','C','D'], // 5
-    ['P','M','G','F','W','D','Z'], // 6
-    ['M','V','Z','W','S','J','D','P'], // 7
-    ['N','D','S'], // 8
-    ['D','Z','S','F','M'] // 9
-  ]
+  //const rows = input.split('\r\n');
+  let output = 0;
 
-  for(let i = 10; i < rows.length; i++){
-    const instruction = rows[i].split(' ');
-    const qty = instruction[1];
-    const source = instruction[3];
-    const destination = instruction[5];
+  for (let i = 0; i < input.length; i++) {
+    const arr: string[] = [input[i + 0], input[i + 1], input[i + 2], input[i + 3]]
+    let isUnique = true;
+
+    arr.forEach((element) => {
+      if(!(arr.filter((x) => x != element).length === 3)){
+        isUnique = false;
+      }
+    })
+    if (isUnique) {
+      output = i + 4;
+      break;
+    }
   }
-
-  return output;  
+  return output;
 }
