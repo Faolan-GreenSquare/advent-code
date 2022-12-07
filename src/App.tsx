@@ -1,7 +1,7 @@
 import React from "react"
 
 export const App = () => {
-  const [output, setOutput] = React.useState('');
+  const [output, setOutput] = React.useState(0);
   const [input, setInput] = React.useState('');
 
   const handleOnFileChange = (e) => {
@@ -16,8 +16,8 @@ export const App = () => {
   }
 
   React.useEffect(() => {
-    //setOutput(executePartOne(input))
-    setOutput(executePartTwo(input))
+    setOutput(executePartOne(input))
+    //setOutput(executePartTwo(input))
   }, [input]);
 
   return (
@@ -29,114 +29,132 @@ export const App = () => {
   )
 }
 
-const executePartOne = (input: string): string => {
+interface folder {
+  key: string;
+  parentFolder: folder | undefined;
+  childrenFolders: folder[];
+  childrenFiles: file[];
+}
+
+interface file {
+  key: string;
+  size: number;
+  location: folder;
+}
+
+const executePartOne = (input: string): number => {
   if (!input) {
-    return '';
+    return 0;
   }
   const rows = input.split('\r\n');
-  let output = '';
-  /*
-      [H]         [D]     [P]        
-  [W] [B]         [C] [Z] [D]        
-  [T] [J]     [T] [J] [D] [J]        
-  [H] [Z]     [H] [H] [W] [S]     [M]
-  [P] [F] [R] [P] [Z] [F] [W]     [F]
-  [J] [V] [T] [N] [F] [G] [Z] [S] [S]
-  [C] [R] [P] [S] [V] [M] [V] [D] [Z]
-  [F] [G] [H] [Z] [N] [P] [M] [N] [D]
-  1   2   3   4   5   6   7   8   9 
-  */
+  let output = 0;
+  const rootLocation: folder = {
+    key: '/',
+    parentFolder: undefined,
+    childrenFolders: [],
+    childrenFiles: []
+  };
+  let currentLocation = rootLocation;
+  let lastFolderCreated = currentLocation;
+  const allFolders: folder[] = [rootLocation];
 
-  const arr = [
-    ['_'], // 0
-    ['F', 'C', 'J', 'P', 'H', 'T', 'W'], // 1
-    ['G', 'R', 'V', 'F', 'Z', 'J', 'B', 'H'], // 2
-    ['H', 'P', 'T', 'R'], // 3
-    ['Z', 'S', 'N', 'P', 'H', 'T'], // 4
-    ['N', 'V', 'F', 'Z', 'H', 'J', 'C', 'D'], // 5
-    ['P', 'M', 'G', 'F', 'W', 'D', 'Z'], // 6
-    ['M', 'V', 'Z', 'W', 'S', 'J', 'D', 'P'], // 7
-    ['N', 'D', 'S'], // 8
-    ['D', 'Z', 'S', 'F', 'M'] // 9
-  ]
 
-  for (let i = 10; i < rows.length; i++) {
-    const instruction = rows[i].split(' ');
-    const qty = parseInt(instruction[1]);
-    const source = parseInt(instruction[3]);
-    const destination = parseInt(instruction[5]);
+  rows.forEach((x) => {
+    try {
+      if (x.includes('$ cd /')) {
+        currentLocation = rootLocation;
+        lastFolderCreated = currentLocation;
+      }
 
-    if (qty === 0) {
-      continue;
+      if (x.includes('$ cd') && !x.includes('..') && !x.includes('/')) {
+        const locationKey = x.split(" ")[2];
+        currentLocation = currentLocation.childrenFolders[currentLocation.childrenFolders.map(obj => obj.key).indexOf(locationKey)];
+      }
+
+      if (x.includes('dir')) {
+        const newFolder: folder = {
+          key: x.split(" ")[1],
+          parentFolder: currentLocation,
+          childrenFolders: [],
+          childrenFiles: []
+        };
+        allFolders.push(newFolder);
+        currentLocation.childrenFolders.push(newFolder);
+        lastFolderCreated = newFolder;
+      }
+
+      if (x.includes('$ cd ..')) {
+        if (!!currentLocation.parentFolder) {
+          currentLocation = currentLocation.parentFolder;
+        } else {
+          debugger;
+        }
+      }
+
+      if (x[0].match("[0-9]")) {
+        const fileSize = parseInt(x.split(" ")[0]);
+        const fileName = x.split(" ")[1];
+        const newFile: file = {
+          key: fileName,
+          size: fileSize,
+          location: lastFolderCreated
+        }
+        lastFolderCreated.childrenFiles.push(newFile);
+      }
+    } catch (e) {
+      console.log(e);
+      debugger;
     }
+  });
 
-    for (let j = 1; j <= qty; j++) {
-      arr[destination][arr[destination].length] = arr[source][arr[source].length - j];
-    }
-
-    arr[source].splice(arr[source].length - qty, qty);
-
-  }
-
-  for (let i = 1; i < arr.length; i++) {
-    output += arr[i][arr[i].length - 1];
-  }
+  output = folderSearch(rootLocation);
 
   return output;
 }
 
-const executePartTwo = (input: string): string => {
+const executePartTwo = (input: string): number => {
   if (!input) {
-    return '';
+    return 0;
   }
   const rows = input.split('\r\n');
-  let output = '';
+  let output = 0;
+
+  return output;
+}
+
+const folderSearch = (folder: folder): number => {
   /*
-      [H]         [D]     [P]        
-  [W] [B]         [C] [Z] [D]        
-  [T] [J]     [T] [J] [D] [J]        
-  [H] [Z]     [H] [H] [W] [S]     [M]
-  [P] [F] [R] [P] [Z] [F] [W]     [F]
-  [J] [V] [T] [N] [F] [G] [Z] [S] [S]
-  [C] [R] [P] [S] [V] [M] [V] [D] [Z]
-  [F] [G] [H] [Z] [N] [P] [M] [N] [D]
-  1   2   3   4   5   6   7   8   9 
+  let recursiveOutput = 0;
+  let thisFolderOutput = 0;
+  if (folder.childrenFolders.length > 0) {
+    folder.childrenFolders.forEach(x => recursiveOutput = recursiveOutput + folderSearch(x));
+  }
+  if (folder.childrenFiles.length > 0) {
+    folder.childrenFiles.forEach(x => thisFolderOutput = thisFolderOutput + x.size);
+  }
+  if (thisFolderOutput <= 100000){
+    return thisFolderOutput + recursiveOutput;
+  }
+  else {
+    return recursiveOutput;
+  }
   */
-
-  const arr = [
-    ['_'], // 0
-    ['F', 'C', 'J', 'P', 'H', 'T', 'W'], // 1
-    ['G', 'R', 'V', 'F', 'Z', 'J', 'B', 'H'], // 2
-    ['H', 'P', 'T', 'R'], // 3
-    ['Z', 'S', 'N', 'P', 'H', 'T'], // 4
-    ['N', 'V', 'F', 'Z', 'H', 'J', 'C', 'D'], // 5
-    ['P', 'M', 'G', 'F', 'W', 'D', 'Z'], // 6
-    ['M', 'V', 'Z', 'W', 'S', 'J', 'D', 'P'], // 7
-    ['N', 'D', 'S'], // 8
-    ['D', 'Z', 'S', 'F', 'M'] // 9
-  ]
-
-  for (let i = 10; i < rows.length; i++) {
-    const instruction = rows[i].split(' ');
-    const qty = parseInt(instruction[1]);
-    const source = parseInt(instruction[3]);
-    const destination = parseInt(instruction[5]);
-
-    if (qty === 0) {
-      continue;
-    }
-
-    for (let j = 0; j < qty; j++) {
-      arr[destination][arr[destination].length] = arr[source][arr[source].length - qty + j];
-    }
-
-    arr[source].splice(arr[source].length - qty, qty);
-
+  let thisFolderOutput = 0;
+  let recursiveOutput = 0;
+  folder.childrenFiles.forEach(x => thisFolderOutput = thisFolderOutput + x.size);
+  folder.childrenFolders.forEach(x => thisFolderOutput = fileSearch(x));
+  folder.childrenFolders.forEach(x => recursiveOutput = recursiveOutput + folderSearch(x));
+  if(thisFolderOutput <= 100000){
+    return thisFolderOutput + recursiveOutput;
+  } else {
+    return recursiveOutput;
   }
 
-  for (let i = 1; i < arr.length; i++) {
-    output += arr[i][arr[i].length - 1];
-  }
+}
 
+const fileSearch = (folder: folder): number => {
+  let output = 0;
+  folder.childrenFiles.forEach(x => output = output + x.size);
+  folder.childrenFolders.forEach(x => output = output + fileSearch(x));
   return output;
 }
