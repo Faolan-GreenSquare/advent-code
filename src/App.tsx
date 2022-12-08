@@ -58,7 +58,6 @@ const executePartOne = (input: string): number => {
   let lastFolderCreated = currentLocation;
   const allFolders: folder[] = [rootLocation];
 
-
   rows.forEach((x) => {
     try {
       if (x.includes('$ cd /')) {
@@ -99,11 +98,13 @@ const executePartOne = (input: string): number => {
 
   const searchFolders = (folder: folder): number => {
     let folderSize = 0;
-    folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
     folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
+    console.log(`FolderName: ${folder.key}, FolderSize: ${folderSize} - Pre-Recursion`);
+    folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
+    console.log(`FolderName: ${folder.key}, FolderSize: ${folderSize} - Post-Recursion`);
     return folderSize;
   }
-
+  console.log(allFolders);
   allFolders.forEach(x => {
     const temp = searchFolders(x);
     output = temp <= 100000 ? output + temp : output + 0;
