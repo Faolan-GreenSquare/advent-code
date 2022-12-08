@@ -16,8 +16,8 @@ export const App = () => {
   }
 
   React.useEffect(() => {
-    //setOutput(executePartOne(input))
-    setOutput(executePartTwo(input))
+    setOutput(executePartOne(input))
+    //setOutput(executePartTwo(input))
   }, [input]);
 
   return (
@@ -29,17 +29,9 @@ export const App = () => {
   )
 }
 
-interface folder {
-  key: string;
-  parentFolder: folder | undefined;
-  childrenFolders: folder[];
-  childrenFiles: file[];
-}
-
-interface file {
-  key: string;
-  size: number;
-  location: folder;
+interface tree {
+  value: number;
+  isVisible: boolean;
 }
 
 const executePartOne = (input: string): number => {
@@ -48,62 +40,78 @@ const executePartOne = (input: string): number => {
   }
   const rows = input.split('\r\n');
   let output = 0;
-  const rootLocation: folder = {
-    key: '/',
-    parentFolder: undefined,
-    childrenFolders: [],
-    childrenFiles: []
-  };
-  let currentLocation = rootLocation;
-  const allFolders: folder[] = [rootLocation];
+  const forest: tree[][] = [];
+  try {
 
-  rows.forEach((x) => {
-    try {
-      if (x.includes('$ cd /')) {
-        currentLocation = rootLocation;
-      } else if (x.includes('$ cd ..')) {
-        if (!!currentLocation.parentFolder) {
-          currentLocation = currentLocation.parentFolder;
-        }
-      } else if (x.includes('$ cd')) {
-        const locationKey = x.split(" ")[2];
-        currentLocation = currentLocation.childrenFolders[currentLocation.childrenFolders.map(obj => obj.key).indexOf(locationKey)];
-      } else if (x.includes('dir')) {
-        const newFolder: folder = {
-          key: x.split(" ")[1],
-          parentFolder: currentLocation,
-          childrenFolders: [],
-          childrenFiles: []
-        };
-        allFolders.push(newFolder);
-        currentLocation.childrenFolders.push(newFolder);
-      } else if (x[0].match("[0-9]")) {
-        const fileSize = parseInt(x.split(" ")[0]);
-        const fileName = x.split(" ")[1];
-        const newFile: file = {
-          key: fileName,
-          size: fileSize,
-          location: currentLocation
-        }
-        currentLocation.childrenFiles.push(newFile);
+    for (let i = 0; i < rows.length; i++) {
+      forest[i] = []
+      for (let j = 0; j < rows[i].length; j++) {
+        forest[i][j] = {
+          value: parseInt(rows[i][j]),
+          isVisible: false
+        } as tree;
       }
-    } catch (e) {
-      console.log(e);
-      debugger;
     }
-  });
+    debugger;
 
-  const searchFolders = (folder: folder): number => {
-    let folderSize = 0;
-    folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
-    folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
-    return folderSize;
+    // check Left to Right
+    for (let i = 0; i < forest.length; i++) {
+      for (let j = 0; j < forest[i].length; j++) {
+        let highestPoint = -1;
+        if (forest[i][j].value > highestPoint) {
+          forest[i][j].isVisible = true;
+          highestPoint = forest[i][j].value;
+        }
+      }
+    }
+
+    debugger;
+
+    // check Right to Left
+    for (let i = 0; i < forest.length; i++) {
+      for (let j = forest[i].length; j > 0; j--) {
+        let highestPoint = -1;
+        if (forest[i][j].value > highestPoint) {
+          forest[i][j].isVisible = true;
+          highestPoint = forest[i][j].value;
+        }
+      }
+    }
+
+    // check Up to Down
+    for (let i = 0; i < forest.length; i++) {
+      for (let j = 0; j < forest[i].length; j++) {
+        let highestPoint = -1;
+        if (forest[j][i].value > highestPoint) {
+          forest[j][i].isVisible = true;
+          highestPoint = forest[j][i].value;
+        }
+      }
+    }
+
+    // check Down to Up
+    for (let i = 0; i < forest.length; i++) {
+      for (let j = forest[i].length - 1; j > 0; j--) {
+        let highestPoint = -1;
+        if (forest[j][i].value > highestPoint) {
+          forest[j][i].isVisible = true;
+          highestPoint = forest[j][i].value;
+        }
+      }
+    }
+
+    // count all isVisible trees
+    for (let i = 0; i < forest.length; i++) {
+      for (let j = 0; j < forest[i].length; j++) {
+        if (forest[i][j].isVisible) {
+          output++;
+        }
+      }
+    }
+  } catch (e) {
+    console.log(e);
+    debugger;
   }
-  
-  allFolders.forEach(x => {
-    const temp = searchFolders(x);
-    output = temp <= 100000 ? output + temp : output + 0;
-  });
 
   return output;
 }
@@ -114,73 +122,6 @@ const executePartTwo = (input: string): number => {
   }
   const rows = input.split('\r\n');
   let output = 0;
-  const rootLocation: folder = {
-    key: '/',
-    parentFolder: undefined,
-    childrenFolders: [],
-    childrenFiles: []
-  };
-  let currentLocation = rootLocation;
-  const allFolders: folder[] = [rootLocation];
-
-  rows.forEach((x) => {
-    try {
-      if (x.includes('$ cd /')) {
-        currentLocation = rootLocation;
-      } else if (x.includes('$ cd ..')) {
-        if (!!currentLocation.parentFolder) {
-          currentLocation = currentLocation.parentFolder;
-        }
-      } else if (x.includes('$ cd')) {
-        const locationKey = x.split(" ")[2];
-        currentLocation = currentLocation.childrenFolders[currentLocation.childrenFolders.map(obj => obj.key).indexOf(locationKey)];
-      } else if (x.includes('dir')) {
-        const newFolder: folder = {
-          key: x.split(" ")[1],
-          parentFolder: currentLocation,
-          childrenFolders: [],
-          childrenFiles: []
-        };
-        allFolders.push(newFolder);
-        currentLocation.childrenFolders.push(newFolder);
-      } else if (x[0].match("[0-9]")) {
-        const fileSize = parseInt(x.split(" ")[0]);
-        const fileName = x.split(" ")[1];
-        const newFile: file = {
-          key: fileName,
-          size: fileSize,
-          location: currentLocation
-        }
-        currentLocation.childrenFiles.push(newFile);
-      }
-    } catch (e) {
-      console.log(e);
-      debugger;
-    }
-  });
-
-  const searchFolders = (folder: folder): number => {
-    let folderSize = 0;
-    folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
-    folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
-    return folderSize;
-  }
-  
-  const totalFileSystem = 70000000;
-  const spaceRequired = 30000000;
-  const currentUsedSpace = searchFolders(rootLocation);
-  const currentUnusedSpace = totalFileSystem - currentUsedSpace;
-
-  const minReqSpace = spaceRequired - currentUnusedSpace;
-  output = totalFileSystem;
-
-  allFolders.forEach(x => {
-    let value = searchFolders(x);
-    if (value >= minReqSpace && value < output) {
-      output = value;
-    }
-  });
-
   return output;
 
 }
