@@ -64,14 +64,14 @@ const executePartOne = (input: string): number => {
       if (x.includes('$ cd /')) {
         currentLocation = rootLocation;
         lastFolderCreated = currentLocation;
-      }
-
-      if (x.includes('$ cd') && !x.includes('..') && !x.includes('/')) {
+      } else if (x.includes('$ cd ..')) {
+        if (!!currentLocation.parentFolder) {
+          currentLocation = currentLocation.parentFolder;
+        }
+      } else if (x.includes('$ cd')) {
         const locationKey = x.split(" ")[2];
         currentLocation = currentLocation.childrenFolders[currentLocation.childrenFolders.map(obj => obj.key).indexOf(locationKey)];
-      }
-
-      if (x.includes('dir')) {
+      } else if (x.includes('dir')) {
         const newFolder: folder = {
           key: x.split(" ")[1],
           parentFolder: currentLocation,
@@ -81,17 +81,7 @@ const executePartOne = (input: string): number => {
         allFolders.push(newFolder);
         currentLocation.childrenFolders.push(newFolder);
         lastFolderCreated = newFolder;
-      }
-
-      if (x.includes('$ cd ..')) {
-        if (!!currentLocation.parentFolder) {
-          currentLocation = currentLocation.parentFolder;
-        } else {
-          debugger;
-        }
-      }
-
-      if (x[0].match("[0-9]")) {
+      } else if (x[0].match("[0-9]")) {
         const fileSize = parseInt(x.split(" ")[0]);
         const fileName = x.split(" ")[1];
         const newFile: file = {
