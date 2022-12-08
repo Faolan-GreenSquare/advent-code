@@ -109,16 +109,16 @@ const executePartOne = (input: string): number => {
 
   const searchFolders = (folder: folder): number => {
     let folderSize = 0;
-    folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
     folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
-    if (folderSize <= 100000) {
-      return 0;
-    } else {
-      return folderSize;
-    }
+    folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
+    return folderSize;
   }
 
-  allFolders.forEach(x => output = output + searchFolders(x));
+  allFolders.forEach(x => {
+    const temp = searchFolders(x);
+    output = temp <= 100000 ? output + temp : output + 0;
+  });
+
   return output;
 }
 
