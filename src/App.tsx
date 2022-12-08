@@ -107,8 +107,18 @@ const executePartOne = (input: string): number => {
     }
   });
 
-  output = folderSearch(rootLocation);
+  const searchFolders = (folder: folder): number => {
+    let folderSize = 0;
+    folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
+    folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
+    if (folderSize <= 100000) {
+      return 0;
+    } else {
+      return folderSize;
+    }
+  }
 
+  allFolders.forEach(x => output = output + searchFolders(x));
   return output;
 }
 
@@ -144,7 +154,7 @@ const folderSearch = (folder: folder): number => {
   folder.childrenFiles.forEach(x => thisFolderOutput = thisFolderOutput + x.size);
   folder.childrenFolders.forEach(x => thisFolderOutput = fileSearch(x));
   folder.childrenFolders.forEach(x => recursiveOutput = recursiveOutput + folderSearch(x));
-  if(thisFolderOutput <= 100000){
+  if (thisFolderOutput <= 100000) {
     return thisFolderOutput + recursiveOutput;
   } else {
     return recursiveOutput;
