@@ -16,8 +16,8 @@ export const App = () => {
   }
 
   React.useEffect(() => {
-    setOutput(executePartOne(input))
-    //setOutput(executePartTwo(input))
+    //setOutput(executePartOne(input))
+    setOutput(executePartTwo(input))
   }, [input]);
 
   return (
@@ -114,6 +114,73 @@ const executePartTwo = (input: string): number => {
   }
   const rows = input.split('\r\n');
   let output = 0;
+  const rootLocation: folder = {
+    key: '/',
+    parentFolder: undefined,
+    childrenFolders: [],
+    childrenFiles: []
+  };
+  let currentLocation = rootLocation;
+  const allFolders: folder[] = [rootLocation];
+
+  rows.forEach((x) => {
+    try {
+      if (x.includes('$ cd /')) {
+        currentLocation = rootLocation;
+      } else if (x.includes('$ cd ..')) {
+        if (!!currentLocation.parentFolder) {
+          currentLocation = currentLocation.parentFolder;
+        }
+      } else if (x.includes('$ cd')) {
+        const locationKey = x.split(" ")[2];
+        currentLocation = currentLocation.childrenFolders[currentLocation.childrenFolders.map(obj => obj.key).indexOf(locationKey)];
+      } else if (x.includes('dir')) {
+        const newFolder: folder = {
+          key: x.split(" ")[1],
+          parentFolder: currentLocation,
+          childrenFolders: [],
+          childrenFiles: []
+        };
+        allFolders.push(newFolder);
+        currentLocation.childrenFolders.push(newFolder);
+      } else if (x[0].match("[0-9]")) {
+        const fileSize = parseInt(x.split(" ")[0]);
+        const fileName = x.split(" ")[1];
+        const newFile: file = {
+          key: fileName,
+          size: fileSize,
+          location: currentLocation
+        }
+        currentLocation.childrenFiles.push(newFile);
+      }
+    } catch (e) {
+      console.log(e);
+      debugger;
+    }
+  });
+
+  const searchFolders = (folder: folder): number => {
+    let folderSize = 0;
+    folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
+    folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
+    return folderSize;
+  }
+  
+  const totalFileSystem = 70000000;
+  const spaceRequired = 30000000;
+  const currentUsedSpace = searchFolders(rootLocation);
+  const currentUnusedSpace = totalFileSystem - currentUsedSpace;
+
+  const minReqSpace = spaceRequired - currentUnusedSpace;
+  output = totalFileSystem;
+
+  allFolders.forEach(x => {
+    let value = searchFolders(x);
+    if (value >= minReqSpace && value < output) {
+      output = value;
+    }
+  });
 
   return output;
+
 }
