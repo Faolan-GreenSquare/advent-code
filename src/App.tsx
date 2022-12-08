@@ -55,14 +55,12 @@ const executePartOne = (input: string): number => {
     childrenFiles: []
   };
   let currentLocation = rootLocation;
-  let lastFolderCreated = currentLocation;
   const allFolders: folder[] = [rootLocation];
 
   rows.forEach((x) => {
     try {
       if (x.includes('$ cd /')) {
         currentLocation = rootLocation;
-        lastFolderCreated = currentLocation;
       } else if (x.includes('$ cd ..')) {
         if (!!currentLocation.parentFolder) {
           currentLocation = currentLocation.parentFolder;
@@ -79,16 +77,15 @@ const executePartOne = (input: string): number => {
         };
         allFolders.push(newFolder);
         currentLocation.childrenFolders.push(newFolder);
-        lastFolderCreated = newFolder;
       } else if (x[0].match("[0-9]")) {
         const fileSize = parseInt(x.split(" ")[0]);
         const fileName = x.split(" ")[1];
         const newFile: file = {
           key: fileName,
           size: fileSize,
-          location: lastFolderCreated
+          location: currentLocation
         }
-        lastFolderCreated.childrenFiles.push(newFile);
+        currentLocation.childrenFiles.push(newFile);
       }
     } catch (e) {
       console.log(e);
@@ -99,12 +96,10 @@ const executePartOne = (input: string): number => {
   const searchFolders = (folder: folder): number => {
     let folderSize = 0;
     folder.childrenFiles.forEach(x => folderSize = folderSize + x.size);
-    console.log(`FolderName: ${folder.key}, FolderSize: ${folderSize} - Pre-Recursion`);
     folder.childrenFolders.forEach(x => folderSize = folderSize + searchFolders(x));
-    console.log(`FolderName: ${folder.key}, FolderSize: ${folderSize} - Post-Recursion`);
     return folderSize;
   }
-  console.log(allFolders);
+  
   allFolders.forEach(x => {
     const temp = searchFolders(x);
     output = temp <= 100000 ? output + temp : output + 0;
