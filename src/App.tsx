@@ -30,21 +30,15 @@ export const App = () => {
 }
 
 const executePartOne = (input: string): number => {
-  if(!input){
-    return 0;
-  }
+  if(!input){return 0;}
   const rows = input.split('\r\n');
   let output = 0;
-
   return output;  
 }
 
 const executePartTwo = (input: string): number => {
-  if(!input){
-    return 0;
-  }
+  if(!input){return 0;}
   const rows = input.split('\r\n');
   let output = 0;
-
   return output;  
 }
