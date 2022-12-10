@@ -32,52 +32,43 @@ export const App = () => {
 const execute = (input: string): number => {
   if (!input) { return 0; }
   const rows = input.split('\r\n');
+  const cycleOutputs: Record<number, number> = {};
   let output = 0;
+  let readLine = 0;
+  let delayUntil = 1;
+  let x = 1;
 
   try {
-    const positions: Record<string, boolean> = { "0,0": true };
-    let tail_x = 0;
-    let tail_y = 0;
-    let head_x = 0;
-    let head_y = 0;
-    let rope_x = 0;
-    let rope_y = 0;
 
-    for (let i = 0; i < rows.length; i++) {
-      const instruction = rows[i].split(' ')[0];
-      const moves = parseInt(rows[i].split(' ')[1]);
-      for (let j = 1; j <= moves; j++) {
-        switch (instruction.toUpperCase()) {
-          case "U": // Y + 1
-            head_y++;
-            break;
-          case "D": // Y - 1
-            head_y--;
-            break;
-          case "R": // X + 1
-            head_x++;
-            break;
-          case "L": // X - 1
-            head_x--;
-            break;
-        }
-        const diff_x = tail_x - head_x;
-        const diff_y = tail_y - head_y;
-        if (!(diff_x >= -1 && diff_x <= 1 && diff_y >= -1 && diff_y <= 1)) {
-          tail_x = rope_x;
-          tail_y = rope_y;
-          positions[`${tail_x},${tail_y}`] = true;
-        }
-        rope_x = head_x;
-        rope_y = head_y;
+    for (let c = 1; c <= 220 && readLine < rows.length; c++) {
+      cycleOutputs[c] = cycleOutputs[c] ? cycleOutputs[c] + x : x;
+      x = cycleOutputs[c];
+      if (delayUntil !== c) {
+        continue;
       }
-    }
-    for (let x of Object.keys(positions)){
-      if(!!x){
-        output++;
+      const instruction = rows[readLine].split(' ')[0];
+      if (instruction === 'noop') {
+        delayUntil = c + 1;
       }
+      else if (instruction === 'addx') {
+        delayUntil = c + 2;
+        cycleOutputs[c + 2] = parseInt(rows[readLine].split(' ')[1]);
+      }
+
+      console.log(`Cycle Count: ${c} Reading line: ${readLine} ${rows[readLine]} x = ${x} cycle output = ${cycleOutputs[c]}`);
+
+      readLine++;
     }
-  } catch (e) {
+
+    output = (cycleOutputs[20] * 20) +
+      (cycleOutputs[60] * 60) +
+      (cycleOutputs[100] * 100) +
+      (cycleOutputs[140] * 140) +
+      (cycleOutputs[180] * 180) +
+      (cycleOutputs[220] * 220);
+
+  }
+  catch (e) {
     console.log(e)
     debugger;
   }
