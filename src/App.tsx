@@ -36,7 +36,6 @@ const execute = (input: string): number => {
 
   try {
     const positions: Record<string, boolean> = { "0,0": true };
-    // diff_x >= -1 && diff_x <= 1 && diff_y >= -1 && diff_y <= 1
     let tail_x = 0;
     let tail_y = 0;
     let head_x = 0;
@@ -74,7 +73,9 @@ const execute = (input: string): number => {
       }
     }
     for (let x of Object.keys(positions)){
-      output++;
+      if(!!x){
+        output++;
+      }
     }
   } catch (e) {
     console.log(e)
