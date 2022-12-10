@@ -17,7 +17,6 @@ export const App = () => {
 
   React.useEffect(() => {
     setOutput(execute(input));
-    //setOutput(executePartTwo(input));
   }, [input]);
 
   return (
@@ -37,12 +36,13 @@ const execute = (input: string): number => {
   let readLine = 0;
   let delayUntil = 1;
   let x = 1;
+  let line = "";
 
   try {
-
-    for (let c = 1; c <= 220 && readLine < rows.length; c++) {
+    for (let c = 1; readLine < rows.length; c++) {
       cycleOutputs[c] = cycleOutputs[c] ? cycleOutputs[c] + x : x;
       x = cycleOutputs[c];
+      line += Math.abs((c % 40) - (x + 1)) > 1 ? '.' : '#';
       if (delayUntil !== c) {
         continue;
       }
@@ -54,18 +54,12 @@ const execute = (input: string): number => {
         delayUntil = c + 2;
         cycleOutputs[c + 2] = parseInt(rows[readLine].split(' ')[1]);
       }
-
-      console.log(`Cycle Count: ${c} Reading line: ${readLine} ${rows[readLine]} x = ${x} cycle output = ${cycleOutputs[c]}`);
-
       readLine++;
     }
 
-    output = (cycleOutputs[20] * 20) +
-      (cycleOutputs[60] * 60) +
-      (cycleOutputs[100] * 100) +
-      (cycleOutputs[140] * 140) +
-      (cycleOutputs[180] * 180) +
-      (cycleOutputs[220] * 220);
+    for (let i = 0; i < 6; i++) {
+      console.log(line.slice(i * 40, i * 40 + 40));
+    }
 
   }
   catch (e) {
