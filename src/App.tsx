@@ -35,111 +35,47 @@ const execute = (input: string): number => {
   let output = 0;
 
   try {
-    // Build grid
-    let current_x = 0;
-    let current_y = 0;
-    let max_x = 0;
-    let min_x = 0;
-    let max_y = 0;
-    let min_y = 0;
-    for (let i = 0; i < rows.length; i++) {
-      const instruction = rows[i].split(' ')[0];
-      const moves = parseInt(rows[i].split(' ')[1]);
-      switch (instruction.toUpperCase()) {
-        case "U":
-          current_y = current_y + moves;
-          max_y = current_y > max_y ? current_y : max_y;
-          break;
-        case "D":
-          current_y = current_y - moves;
-          min_y = current_y < min_y ? current_y : min_y;
-          break;
-        case "R":
-          current_x = current_x + moves;
-          max_x = current_x > max_x ? current_x : max_x;
-          break;
-        case "L":
-          current_x = current_x - moves;
-          min_x = current_x < min_x ? current_x : min_x;
-          break;
-      }
-    }
+    const positions: Record<string, boolean> = { "0,0": true };
+    // diff_x >= -1 && diff_x <= 1 && diff_y >= -1 && diff_y <= 1
+    let tail_x = 0;
+    let tail_y = 0;
+    let head_x = 0;
+    let head_y = 0;
+    let rope_x = 0;
+    let rope_y = 0;
 
-    // Generate Game Board
-    const gridHeight = max_y - min_y;
-    const gridWidth = max_x - min_x;
-    const gridPositions: Record<number, boolean> = {};
-    for (let i = 0; i < gridHeight; i++) {
-      for (let j = 0; j < gridWidth; j++) {
-        gridPositions[i * gridWidth + j] = false;
-      }
-    }
-
-    const isNeighbour = (position: number, comparitor: number): boolean => {
-      const diff_x = (position % gridWidth) - (comparitor % gridWidth);
-      const diff_y = (Math.floor(position / gridWidth)) - (Math.floor(comparitor / gridWidth));
-      return diff_x >= -1 && diff_x <= 1 && diff_y >= -1 && diff_y <= 1
-    }
-
-    const convertToCoordinates = (position: number): number[] => {
-      const x = position % gridWidth;
-      const y = Math.floor(position / gridWidth);
-      return [x, y];
-    }
-
-    const convertToPosition = (coordinates: number[]): number => {
-      const x = coordinates[0];
-      const y = coordinates[1];
-      return (y * gridWidth) + x;
-    }
-
-    // Follow Head 
-    let oldPosition = 0;
-    let headPosition = 0;
-    let tailPosition = 0;
-    gridPositions[tailPosition] = true;
     for (let i = 0; i < rows.length; i++) {
       const instruction = rows[i].split(' ')[0];
       const moves = parseInt(rows[i].split(' ')[1]);
       for (let j = 1; j <= moves; j++) {
-        const headCoordinates = convertToCoordinates(headPosition);
-        const x = headCoordinates[0];
-        const y = headCoordinates[1];
         switch (instruction.toUpperCase()) {
-          case "U": // Y = [1]
-            headCoordinates[1] = y + 1;
+          case "U": // Y + 1
+            head_y++;
             break;
-          case "D": // Y = [1]
-            headCoordinates[1] = y - 1;
+          case "D": // Y - 1
+            head_y--;
             break;
-          case "R": // X = [0]
-            headCoordinates[0] = x + 1;
+          case "R": // X + 1
+            head_x++;
             break;
-          case "L": // X = [0]
-            headCoordinates[0] = x - 1;
+          case "L": // X - 1
+            head_x--;
             break;
         }
-
-        console.log(`Moving ${j}/${moves}: ${instruction} from (${convertToCoordinates(oldPosition)[0]}, ${convertToCoordinates(oldPosition)[1]} to ${headCoordinates[0]}, ${headCoordinates[1]}`);
-        oldPosition = headPosition;
-        headPosition = convertToPosition(headCoordinates);
-        if (!isNeighbour(tailPosition, headPosition)) {
-          tailPosition = oldPosition;
-          gridPositions[tailPosition] = true;
+        const diff_x = tail_x - head_x;
+        const diff_y = tail_y - head_y;
+        if (!(diff_x >= -1 && diff_x <= 1 && diff_y >= -1 && diff_y <= 1)) {
+          tail_x = rope_x;
+          tail_y = rope_y;
+          positions[`${tail_x},${tail_y}`] = true;
         }
+        rope_x = head_x;
+        rope_y = head_y;
       }
     }
-    
-    // Count results
-    for (let i = 0; i < gridHeight; i++) {
-      for (let j = 0; j < gridWidth; j++) {
-        if(!!gridPositions[i * gridWidth + j]){
-          output++;
-        }
-      }
+    for (let x of Object.keys(positions)){
+      output++;
     }
-
-    console.table(gridPositions);
   } catch (e) {
     console.log(e)
     debugger;
