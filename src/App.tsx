@@ -34,6 +34,8 @@ const execute = (): number => {
     3: { items: [74], itemsInspected: 0, operation: { x: "old", y: 3, op: "+" }, test: 17, targets: [1, 0] }
   }
 
+  const bigMod = 23*19*13*17;
+
   /*
   const monkeys: Record<number, Monkey> = {
     0: { items: [65, 78], itemsInspected: 0, operation: { x: "old", y: 3, op: "*" }, test: 5, targets: [3, 2] },
@@ -55,16 +57,13 @@ const execute = (): number => {
         monkey.itemsInspected++;
         const x: number = typeof (monkey.operation.x) === 'string' ? monkey.items[item] : monkey.operation.x;
         const y: number = typeof (monkey.operation.y) === 'string' ? monkey.items[item] : monkey.operation.y;
-        if(x === Infinity || y === Infinity) {
-          debugger;
-        }
         const doMaths = {
           '+': function (x, y): number { return x + y },
           '-': function (x, y): number { return x - y },
           '*': function (x, y): number { return x * y },
           '/': function (x, y): number { return x / y }
         }
-        monkey.items[item] = Math.floor(doMaths[monkey.operation.op](x, y));
+        monkey.items[item] = Math.floor(doMaths[monkey.operation.op](x, y) / bigMod);
         monkeys[monkey.targets[monkey.items[item] % monkey.test === 0 ? 1 : 0]].items.push(monkey.items[item]);
       }
       monkey.items = [];
