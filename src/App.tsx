@@ -26,17 +26,16 @@ const execute = (): number => {
     test: number,
     targets: number[]
   }
-
+  /*
   const monkeys: Record<number, Monkey> = {
     0: { items: [79, 98], itemsInspected: 0, operation: { x: "old", y: 19, op: "*" }, test: 23, targets: [3, 2] },
     1: { items: [54, 65, 75, 74], itemsInspected: 0, operation: { x: "old", y: 6, op: "+" }, test: 19, targets: [0, 2] },
     2: { items: [79, 60, 97], itemsInspected: 0, operation: { x: "old", y: "old", op: "*" }, test: 13, targets: [3, 1] },
     3: { items: [74], itemsInspected: 0, operation: { x: "old", y: 3, op: "+" }, test: 17, targets: [1, 0] }
   }
-
   const bigMod = 23*19*13*17;
-
-  /*
+  */
+  
   const monkeys: Record<number, Monkey> = {
     0: { items: [65, 78], itemsInspected: 0, operation: { x: "old", y: 3, op: "*" }, test: 5, targets: [3, 2] },
     1: { items: [54, 78, 86, 79, 73, 64, 85, 88], itemsInspected: 0, operation: { x: "old", y: 8, op: "+" }, test: 11, targets: [7, 4] },
@@ -47,8 +46,8 @@ const execute = (): number => {
     6: { items: [88, 74, 68, 56], itemsInspected: 0, operation: { x: "old", y: "old", op: "*" }, test: 17, targets: [2, 0] },
     7: { items: [54, 82, 72, 71, 53, 99, 67], itemsInspected: 0, operation: { x: "old", y: 1, op: "+" }, test: 19, targets: [0, 6] }
   }
-  */
-
+  const bigMod = 5*11*2*13*7*3*17*19;
+  
   const rounds = 10000;
   for (let i = 0; i < rounds; i++) {
     for (const key in monkeys) {
@@ -63,16 +62,27 @@ const execute = (): number => {
           '*': function (x, y): number { return x * y },
           '/': function (x, y): number { return x / y }
         }
-        monkey.items[item] = Math.floor(doMaths[monkey.operation.op](x, y) / bigMod);
+        monkey.items[item] = Math.floor(doMaths[monkey.operation.op](x, y) % bigMod);
         monkeys[monkey.targets[monkey.items[item] % monkey.test === 0 ? 1 : 0]].items.push(monkey.items[item]);
       }
       monkey.items = [];
     }
-    if(i === 0 || i === 19 || i === 999 || i === 1999 || i === 2999 || i === 3999 || i === 4999 || i === 5999 || 
-      i === 6999 || i === 7999 || i === 8999 || i === 9999) {
-      console.log(`Round: ${i+1}`)
-      console.table(monkeys);
+  }
+
+  let firstVal = 0;
+  let secondVal = 0;
+  
+  for (const key in monkeys) {
+    if (monkeys[key].itemsInspected > firstVal) {
+      secondVal = firstVal;
+      firstVal = monkeys[key].itemsInspected;
+    }
+    else if (monkeys[key].itemsInspected > secondVal) {
+      secondVal = monkeys[key].itemsInspected;
     }
   }
+  output = firstVal * secondVal;
+  console.log(`Multiplying First ${firstVal} x Second ${secondVal} totaling ${output}`);
+  console.table(monkeys);
   return output;
 }
