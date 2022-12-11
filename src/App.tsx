@@ -27,15 +27,14 @@ const execute = (): number => {
     targets: number[]
   }
 
-  /*
   const monkeys: Record<number, Monkey> = {
     0: { items: [79, 98], itemsInspected: 0, operation: { x: "old", y: 19, op: "*" }, test: 23, targets: [3, 2] },
     1: { items: [54, 65, 75, 74], itemsInspected: 0, operation: { x: "old", y: 6, op: "+" }, test: 19, targets: [0, 2] },
     2: { items: [79, 60, 97], itemsInspected: 0, operation: { x: "old", y: "old", op: "*" }, test: 13, targets: [3, 1] },
     3: { items: [74], itemsInspected: 0, operation: { x: "old", y: 3, op: "+" }, test: 17, targets: [1, 0] }
-  }  
-  */
+  }
 
+  /*
   const monkeys: Record<number, Monkey> = {
     0: { items: [65, 78], itemsInspected: 0, operation: { x: "old", y: 3, op: "*" }, test: 5, targets: [3, 2] },
     1: { items: [54, 78, 86, 79, 73, 64, 85, 88], itemsInspected: 0, operation: { x: "old", y: 8, op: "+" }, test: 11, targets: [7, 4] },
@@ -46,29 +45,35 @@ const execute = (): number => {
     6: { items: [88, 74, 68, 56], itemsInspected: 0, operation: { x: "old", y: "old", op: "*" }, test: 17, targets: [2, 0] },
     7: { items: [54, 82, 72, 71, 53, 99, 67], itemsInspected: 0, operation: { x: "old", y: 1, op: "+" }, test: 19, targets: [0, 6] }
   }
+  */
 
-  const rounds = 20;
+  const rounds = 10000;
   for (let i = 0; i < rounds; i++) {
     for (const key in monkeys) {
       const monkey = monkeys[key];
-      // inspect each item
       for (let item = 0; item < monkey.items.length; item++) {
         monkey.itemsInspected++;
-        // evaluate worry value of item
         const x: number = typeof (monkey.operation.x) === 'string' ? monkey.items[item] : monkey.operation.x;
         const y: number = typeof (monkey.operation.y) === 'string' ? monkey.items[item] : monkey.operation.y;
-        const doMaths = {
-          '+': function (x, y) { return x + y },
-          '-': function (x, y) { return x - y },
-          '*': function (x, y) { return x * y },
-          '/': function (x, y) { return x / y }
+        if(x === Infinity || y === Infinity) {
+          debugger;
         }
-        monkey.items[item] = Math.floor(doMaths[monkey.operation.op](x, y) / 3);
+        const doMaths = {
+          '+': function (x, y): number { return x + y },
+          '-': function (x, y): number { return x - y },
+          '*': function (x, y): number { return x * y },
+          '/': function (x, y): number { return x / y }
+        }
+        monkey.items[item] = Math.floor(doMaths[monkey.operation.op](x, y));
         monkeys[monkey.targets[monkey.items[item] % monkey.test === 0 ? 1 : 0]].items.push(monkey.items[item]);
       }
       monkey.items = [];
     }
+    if(i === 0 || i === 19 || i === 999 || i === 1999 || i === 2999 || i === 3999 || i === 4999 || i === 5999 || 
+      i === 6999 || i === 7999 || i === 8999 || i === 9999) {
+      console.log(`Round: ${i+1}`)
+      console.table(monkeys);
+    }
   }
-  console.table(monkeys);
   return output;
 }
