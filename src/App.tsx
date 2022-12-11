@@ -48,8 +48,6 @@ const execute = (input: string): number => {
       for (let j = 1; j <= moves; j++) {
         let head_x = parseInt(rope[0].split(',')[0]);
         let head_y = parseInt(rope[0].split(',')[1]);
-        temp_x = head_x;
-        temp_y = head_y;
 
         switch (instruction.toUpperCase()) {
           case "U": // Y + 1
@@ -66,23 +64,29 @@ const execute = (input: string): number => {
             break;
         }
         rope[0] = `${head_x},${head_y}`;
+        console.table(rope);
         for (let k = 1; k < 10; k++) {
-          let leading_x = parseInt(rope[k - 1].split(',')[0]);
-          let leading_y = parseInt(rope[k - 1].split(',')[1]);
-          let trailing_x = parseInt(rope[k].split(',')[0]);
-          let trailing_y = parseInt(rope[k].split(',')[1]);
+          let x = parseInt(rope[k].split(',')[0]);
+          let y = parseInt(rope[k].split(',')[1]);
+          const diff_x = parseInt(rope[k - 1].split(',')[0]) - x;
+          const diff_y = parseInt(rope[k - 1].split(',')[1]) - y;
 
-          const diff_x = trailing_x - leading_x;
-          const diff_y = trailing_y - leading_y;
+          if (Math.abs(diff_x) <= 1 && Math.abs(diff_y) <= 1) {
+            break;
+          }
+          if (diff_x > 0)
+            x++;
+          if (diff_x < 0)
+            x--;
+          if (diff_y > 0)
+            y++;
+          if (diff_y < 0)
+            y--;
 
-          if (!(Math.abs(diff_x) <= 1 && Math.abs(diff_y) <= 1)) {
-            rope[k] = `${temp_x},${temp_y}`;
-            if (k === 9) {
-              debugger;
-              positions[`${temp_x},${temp_y}`] = true;
-            }
-            temp_x = trailing_x;
-            temp_y = trailing_y;
+          rope[k] = `${x},${y}`;
+
+          if (k === 9) {
+            positions[`${x},${y}`] = true;
           }
         }
       }
