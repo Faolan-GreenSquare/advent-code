@@ -33,58 +33,48 @@ const execute = (input: string): number => {
   const rows = input.split('\r\n');
   let output = 0;
 
-  interface mountain {
-    height: number;
-    adj: number[];
+  const strConvert = "abcdefghijklmnopqrstuvwxyz";
+  let start = 0;
+  let end = 0;
+  let graph: number[][] = [];
+
+  const getValue = (rowValue: string): number => {
+    return rowValue === 'S'
+      ? strConvert.indexOf('a')
+      : rowValue === 'E'
+        ? strConvert.indexOf('z')
+        : strConvert.indexOf(rowValue);
   }
 
-  let startV = 0;
-  let endV = 0;
-  const range: Record<number, mountain> = {};
-  let heightConversion = "abcdefghijklmnopqrstuvwxyz";
-
-  // Build Mountain Range
   for (let i = 0; i < rows.length; i++) {
     for (let j = 0; j < rows[i].length; j++) {
-      if (rows[i][j] === 'S') {
-        startV = i * rows[i].length + j % rows[i].length;
-      }
-      else if (rows[i][j] === 'E') {
-        endV = i * rows[i].length + j % rows[i].length;
-      }
-      range[i * rows[i].length + j % rows[i].length] = {
-        height: rows[i][j] === 'S'
-          ? 0
-          : rows[i][j] === 'E'
-            ? 25
-            : heightConversion.indexOf(rows[i][j]),
-        adj: []
-      };
+
+      // Handle Start and End positions
+      start = rows[i][j] === 'S' ? i * rows[i].length + j % rows[i].length : start;
+      end = rows[i][j] === 'E' ? i * rows[i].length + j % rows[i].length : end;
+
+      // Set up Graph and it's value
+      const currentPos = i * rows[i].length + j;
+      graph[currentPos] = [];
+      const value = getValue(rows[i][j]) + 2;
+
+      // Check North i--
+      if (i !== 0 && getValue(rows[i - 1][j]) < value)
+        graph[currentPos].push((i - 1) * rows[0].length + j);
+
+      // Check South i++
+      if (i !== rows.length - 1 && getValue(rows[i + 1][j]) < value)
+        graph[currentPos].push((i + 1) * rows[0].length + j);
+
+      // Check West j--
+      if (j !== 0 && getValue(rows[i][j - 1]) < value)
+        graph[currentPos].push(i * rows[0].length + j - 1);
+
+      // Check East j++
+      if (j !== rows[0].length - 1 && getValue(rows[i][j + 1]) < value)
+        graph[currentPos].push(i * rows[0].length + j + 1);
     }
   }
-
-  // Add Adjacencies
-  for (let i = 0; i < Object.keys(range).length; i++) {
-    const x = i % rows[0].length;
-    const y = Math.floor(i / rows[0].length);
-
-    // Check North y--
-    if (y !== 0 && range[(y - 1) * rows[0].length + x].height <= range[i].height + 1)
-      range[i].adj.push((y - 1) * rows[0].length + x);
-
-    // Check South y++
-    if (y !== rows.length - 1 && range[(y + 1) * rows[0].length + x].height <= range[i].height + 1)
-      range[i].adj.push((y + 1) * rows[0].length + x);
-
-    // Check West x--
-    if (x !== 0 && range[y * rows[0].length + x - 1].height <= range[i].height + 1)
-      range[i].adj.push(y * rows[0].length + x - 1);
-
-    // Check East x++
-    if (x !== rows[0].length - 1 && range[y * rows[0].length + x + 1].height <= range[i].height + 1)
-      range[i].adj.push(y * rows[0].length + x + 1);
-  }
-
   
   return output;
 }
