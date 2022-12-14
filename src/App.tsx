@@ -60,19 +60,19 @@ const execute = (input: string): number => {
 
       // Check North i--
       if (i !== 0 && getValue(rows[i - 1][j]) < value)
-        graph[currentPos].push((i - 1) * rows[0].length + j);
+        graph[currentPos].push((i - 1) * rows[i].length + j);
 
       // Check South i++
       if (i !== rows.length - 1 && getValue(rows[i + 1][j]) < value)
-        graph[currentPos].push((i + 1) * rows[0].length + j);
+        graph[currentPos].push((i + 1) * rows[i].length + j);
 
       // Check West j--
       if (j !== 0 && getValue(rows[i][j - 1]) < value)
-        graph[currentPos].push(i * rows[0].length + j - 1);
+        graph[currentPos].push(i * rows[i].length + j - 1);
 
       // Check East j++
-      if (j !== rows[0].length - 1 && getValue(rows[i][j + 1]) < value)
-        graph[currentPos].push(i * rows[0].length + j + 1);
+      if (j !== rows[i].length - 1 && getValue(rows[i][j + 1]) < value)
+        graph[currentPos].push(i * rows[i].length + j + 1);
     }
   }
   
