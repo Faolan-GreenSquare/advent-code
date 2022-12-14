@@ -50,8 +50,8 @@ const execute = (input: string): number => {
     for (let j = 0; j < rows[i].length; j++) {
 
       // Handle Start and End positions
-      start = rows[i][j] === 'S' ? i * rows[i].length + j % rows[i].length : start;
-      end = rows[i][j] === 'E' ? i * rows[i].length + j % rows[i].length : end;
+      start = rows[i][j] === 'S' ? i * rows[i].length + j : start;
+      end = rows[i][j] === 'E' ? i * rows[i].length + j : end;
 
       // Set up Graph and it's value
       const currentPos = i * rows[i].length + j;
