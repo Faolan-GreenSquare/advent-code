@@ -75,6 +75,39 @@ const execute = (input: string): number => {
         graph[currentPos].push(i * rows[i].length + j + 1);
     }
   }
-  
+
+
+  const bfs = (graph: number[][], start: number, end: number): number => {
+    const visited: boolean[] = [];
+    visited[start] = true;
+    const queue = [start];
+    const edges: number[] = [];
+    edges[start] = 0;
+    //const predecessors: number[] | undefined[] = [];
+    //predecessors[start] = undefined;
+
+    while (queue.length !== 0) {
+      const current = queue.shift();
+      if (current === end) {        
+        return edges[end];
+      }
+      if (current === undefined) {
+        continue;
+      }
+      for (let i = 0; i < graph[current].length; i++) {
+        if (visited[graph[current][i]] == undefined || !visited[graph[current][i]]) {
+          console.log(`Visiting: ${graph[current][i]}`);
+          visited[current] = true;
+          queue.push(graph[current][i]);
+          edges[graph[current][i]] = edges[current] + 1;
+          //predecessors[graph[current][i]] = current;
+        }
+      }
+    }
+    return 0;
+  }
+
+  output = bfs(graph, start, end);
+
   return output;
 }
