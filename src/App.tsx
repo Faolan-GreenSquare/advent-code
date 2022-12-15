@@ -95,9 +95,9 @@ const execute = (input: string): number => {
         continue;
       }
       for (let i = 0; i < graph[current].length; i++) {
-        if (visited[graph[current][i]] == undefined || !visited[graph[current][i]]) {
+        if (!visited[graph[current][i]]) {
           console.log(`Visiting: ${graph[current][i]}`);
-          visited[current] = true;
+          visited[graph[current][i]] = true;
           queue.push(graph[current][i]);
           edges[graph[current][i]] = edges[current] + 1;
           //predecessors[graph[current][i]] = current;
