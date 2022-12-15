@@ -34,7 +34,7 @@ const execute = (input: string): number => {
   let output = 0;
 
   const strConvert = "abcdefghijklmnopqrstuvwxyz";
-  let start = 0;
+  let start:number[] = [];
   let end = 0;
   let graph: number[][] = [];
 
@@ -50,7 +50,9 @@ const execute = (input: string): number => {
     for (let j = 0; j < rows[i].length; j++) {
 
       // Handle Start and End positions
-      start = rows[i][j] === 'S' ? i * rows[i].length + j : start;
+      if(rows[i][j] === 'S' || rows[i][j] === 'a'){
+        start.push(i * rows[i].length + j);
+      }
       end = rows[i][j] === 'E' ? i * rows[i].length + j : end;
 
       // Set up Graph and it's value
@@ -83,8 +85,6 @@ const execute = (input: string): number => {
     const queue = [start];
     const edges: number[] = [];
     edges[start] = 0;
-    //const predecessors: number[] | undefined[] = [];
-    //predecessors[start] = undefined;
 
     while (queue.length !== 0) {
       const current = queue.shift();
@@ -96,18 +96,22 @@ const execute = (input: string): number => {
       }
       for (let i = 0; i < graph[current].length; i++) {
         if (!visited[graph[current][i]]) {
-          console.log(`Visiting: ${graph[current][i]}`);
           visited[graph[current][i]] = true;
           queue.push(graph[current][i]);
           edges[graph[current][i]] = edges[current] + 1;
-          //predecessors[graph[current][i]] = current;
         }
       }
     }
     return 0;
   }
 
-  output = bfs(graph, start, end);
+  for (let i = 0; i < start.length; i++) {
+    const tempValue = bfs(graph, start[i], end);
+    if(tempValue > 0){
+      console.log(`Start ${i} / ${start.length}: ${tempValue} steps`);
+      output = tempValue < output || output == 0 ? tempValue : output;
+    }
+  }
 
   return output;
 }
