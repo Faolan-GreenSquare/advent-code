@@ -33,81 +33,48 @@ const execute = (input: string): number => {
   const rows = input.split('\r\n');
   let output = 0;
 
-  const strConvert = "abcdefghijklmnopqrstuvwxyz";
-  let start = 0;
-  let end = 0;
-  let graph: number[][] = [];
+  const shapes: Record<number, number[][]> = {
+    0: [
+      [0, 0, 1, 1, 1, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0]
+    ],
+    1: [
+      [0, 0, 0, 1, 0, 0, 0],
+      [0, 0, 1, 1, 1, 0, 0],
+      [0, 0, 0, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0]
+    ],
+    2: [
+      [0, 0, 0, 0, 1, 0, 0],
+      [0, 0, 0, 0, 1, 0, 0],
+      [0, 0, 1, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0]
+    ],
+    3: [
+      [0, 0, 1, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0]
+    ],
+    4: [
+      [0, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0]
+    ]
+  };
 
-  const getValue = (rowValue: string): number => {
-    return rowValue === 'S'
-      ? strConvert.indexOf('a')
-      : rowValue === 'E'
-        ? strConvert.indexOf('z')
-        : strConvert.indexOf(rowValue);
-  }
-
-  for (let i = 0; i < rows.length; i++) {
-    for (let j = 0; j < rows[i].length; j++) {
-
-      // Handle Start and End positions
-      start = rows[i][j] === 'S' ? i * rows[i].length + j : start;
-      end = rows[i][j] === 'E' ? i * rows[i].length + j : end;
-
-      // Set up Graph and it's value
-      const currentPos = i * rows[i].length + j;
-      graph[currentPos] = [];
-      const value = getValue(rows[i][j]) + 2;
-
-      // Check North i--
-      if (i !== 0 && getValue(rows[i - 1][j]) < value)
-        graph[currentPos].push((i - 1) * rows[i].length + j);
-
-      // Check South i++
-      if (i !== rows.length - 1 && getValue(rows[i + 1][j]) < value)
-        graph[currentPos].push((i + 1) * rows[i].length + j);
-
-      // Check West j--
-      if (j !== 0 && getValue(rows[i][j - 1]) < value)
-        graph[currentPos].push(i * rows[i].length + j - 1);
-
-      // Check East j++
-      if (j !== rows[i].length - 1 && getValue(rows[i][j + 1]) < value)
-        graph[currentPos].push(i * rows[i].length + j + 1);
-    }
-  }
-
-
-  const bfs = (graph: number[][], start: number, end: number): number => {
-    const visited: boolean[] = [];
-    visited[start] = true;
-    const queue = [start];
-    const edges: number[] = [];
-    edges[start] = 0;
-    //const predecessors: number[] | undefined[] = [];
-    //predecessors[start] = undefined;
-
-    while (queue.length !== 0) {
-      const current = queue.shift();
-      if (current === end) {        
-        return edges[end];
-      }
-      if (current === undefined) {
-        continue;
-      }
-      for (let i = 0; i < graph[current].length; i++) {
-        if (!visited[graph[current][i]]) {
-          console.log(`Visiting: ${graph[current][i]}`);
-          visited[graph[current][i]] = true;
-          queue.push(graph[current][i]);
-          edges[graph[current][i]] = edges[current] + 1;
-          //predecessors[graph[current][i]] = current;
-        }
-      }
-    }
-    return 0;
-  }
-
-  output = bfs(graph, start, end);
+  
 
   return output;
 }
